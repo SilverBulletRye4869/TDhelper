@@ -1,0 +1,9 @@
+name: TDhelper
+version: '${project.version}'
+main: net.serveron.hane.tdhelper.TDhelper
+api-version: 1.19
+
+
+commands:
+  tdh:
+    usage: /tdh ...
