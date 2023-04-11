@@ -15,10 +15,11 @@ public final class TDhelper extends JavaPlugin {
         // Plugin startup logic
         plugin = this;
         log = getLogger();
-        mainSystem = new MainSystem(this);
 
         this.saveDefaultConfig();
         CustomConfig.createYmlByID("data");
+
+        mainSystem = new MainSystem(this);
         new Command(this,mainSystem);
     }
 
