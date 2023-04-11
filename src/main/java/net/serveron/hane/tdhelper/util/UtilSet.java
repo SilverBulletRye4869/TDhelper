@@ -145,6 +145,10 @@ public class UtilSet {
         return Math.min(2*Math.PI-theta,theta);
     }
 
+    public static void sendEmptyMessage(Player p){sendEmptyMessage(p,1);}
+    public static void sendEmptyMessage(Player p,int cnt){
+        while (cnt-->0)UtilSet.sendPrefixMessage(p,"");
+    }
 
 
 }
