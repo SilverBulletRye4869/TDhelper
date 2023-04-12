@@ -1,6 +1,7 @@
 package net.serveron.hane.tdhelper.command;
 
 import net.serveron.hane.tdhelper.CustomConfig;
+import net.serveron.hane.tdhelper.TDhelper;
 import net.serveron.hane.tdhelper.system.MainSystem;
 import net.serveron.hane.tdhelper.system.TDgroup;
 import net.serveron.hane.tdhelper.util.UtilSet;
@@ -44,7 +45,7 @@ public class Command implements CommandExecutor {
         switch (args[0]){
             case "create": {
                 if (id==null) return true;
-                YamlConfiguration dataYml = CustomConfig.getYmlByID("data");
+                YamlConfiguration dataYml = CustomConfig.getYmlByID(TDhelper.NORMAL_DATA);
                 if (dataYml.get(id) != null) {
                     UtilSet.sendPrefixMessage(p, "§cそのidのTextDisplayは既に存在します");
                     return true;
@@ -126,7 +127,7 @@ public class Command implements CommandExecutor {
                 tdg.teleport(p.getLocation());
                 break;
             case "test":{
-                YamlConfiguration dataYml = CustomConfig.getYmlByID("data");
+                YamlConfiguration dataYml = CustomConfig.getYmlByID(TDhelper.NORMAL_DATA);
                 TextDisplay td = (TextDisplay) Bukkit.getEntity(UUID.fromString(dataYml.getString(args[1])));
                 td.setText(args[2]);
             }
@@ -155,7 +156,7 @@ public class Command implements CommandExecutor {
                         case "removeline":
                         case "view":
                         case "movehere":
-                            return CustomConfig.getYmlByID("data").getKeys(false).stream()
+                            return CustomConfig.getYmlByID(TDhelper.NORMAL_DATA).getKeys(false).stream()
                                     .filter(g->g.matches("^"+args[1]+".*"))
                                     .collect(Collectors.toList());
 
@@ -173,7 +174,7 @@ public class Command implements CommandExecutor {
                         case "removeline":
                             List<String> res = new ArrayList<>();
                             int size = MAIN_SYSTEM.getTDunitByID(args[1]).getSize()-1;
-                            while(size-->0)res.add(String.valueOf(size));
+                            while(size>=0)res.add(String.valueOf(size--));
                             return res;
                         default:
                             return List.of("");
@@ -188,7 +189,7 @@ public class Command implements CommandExecutor {
                             return null;
                     }
             }
-            return null;
+            return List.of("");
         }
     }
 }
