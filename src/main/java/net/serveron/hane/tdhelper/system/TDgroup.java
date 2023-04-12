@@ -1,6 +1,7 @@
 package net.serveron.hane.tdhelper.system;
 
 import net.serveron.hane.tdhelper.CustomConfig;
+import net.serveron.hane.tdhelper.TDhelper;
 import net.serveron.hane.tdhelper.util.UtilSet;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -10,22 +11,21 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
 import org.bukkit.plugin.java.JavaPlugin;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class TDgroup {
-    private static final YamlConfiguration YML = CustomConfig.getYmlByID("data");
+    private static final YamlConfiguration YML = CustomConfig.getYmlByID(TDhelper.NORMAL_DATA);
     private static final double SPACE_SIZE = 0.3;
 
-    private final JavaPlugin plugin;
-    private final MainSystem MAIN_SYSTEM;
+    private final JavaPlugin plugin = TDhelper.getInstance();
+    private final MainSystem MAIN_SYSTEM = TDhelper.getSystem();
     private final String ID;
     private List<UUID> uuids;
     private boolean autoSave = true;
 
-    public TDgroup(JavaPlugin plugin, MainSystem mainSystem, String id){
-        this.plugin = plugin;
-        this.MAIN_SYSTEM = mainSystem;
+    public TDgroup(String id){
         this.ID = id;
         uuids = YML.getStringList(ID+".uuids").stream().map(UUID::fromString).collect(Collectors.toList());
     }
@@ -40,10 +40,7 @@ public class TDgroup {
     }
 
     public boolean setLine(int index,String text){
-        TextDisplay td = getTD(index);
-        if(td==null)return false;
-        td.setText(text);
-        return true;
+        return write(uuids.get(index),text);
     }
 
     public boolean addLine(){return addLine(null);}
@@ -54,7 +51,7 @@ public class TDgroup {
 
         TextDisplay newer = MAIN_SYSTEM.spawnNew(entity.getLocation().add(0,-SPACE_SIZE,0));
         uuids.add(newer.getUniqueId());
-        if(init!=null)newer.setText(init);
+        write(newer.getUniqueId(),init);
         if(autoSave)save();
         return true;
     }
@@ -64,7 +61,7 @@ public class TDgroup {
         if(index<0||index >= uuids.size())return false;
         Location loc = Bukkit.getEntity(uuids.get(index)).getLocation();
         TextDisplay td = MAIN_SYSTEM.spawnNew(loc);
-        if(init!=null)td.setText(init);
+        write(td.getUniqueId(),init);
         for(int i = index;i<uuids.size();i++)tpDown(i);
         uuids.add(index,td.getUniqueId());
         if(autoSave)save();
@@ -145,14 +142,27 @@ public class TDgroup {
 
     public void save(){
         YML.set(ID+".uuids",uuids.stream().map(UUID::toString).collect(Collectors.toList()));
-        CustomConfig.saveYmlByID("data");
+        CustomConfig.saveYmlByID(TDhelper.NORMAL_DATA);
     }
 
     void delete(){
         uuids.stream().forEach(e->Bukkit.getEntity(e).remove());
         YML.set(ID,null);
-        CustomConfig.saveYmlByID("data");
+        CustomConfig.saveYmlByID(TDhelper.NORMAL_DATA);
     }
+
+
+    public static boolean write(UUID uuid,String txt){
+        if(txt==null)return false;
+        Entity entity = Bukkit.getEntity(uuid);
+        if(entity == null || !(entity instanceof TextDisplay))return false;
+        ((TextDisplay)entity).setText(txt);
+        Map<String, List<String>> spMatched = SpChar.checker(txt);
+        if(spMatched.size()>0)SpChar.writeToYml(uuid.toString(),txt,spMatched);
+        else SpChar.deleteFromYml(uuid.toString());
+        return true;
+    }
+
 
 
 }
