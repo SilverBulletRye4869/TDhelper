@@ -1,6 +1,7 @@
 package net.serveron.hane.tdhelper.system;
 
 import net.serveron.hane.tdhelper.CustomConfig;
+import net.serveron.hane.tdhelper.TDhelper;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
@@ -18,13 +19,13 @@ public class MainSystem {
 
     public MainSystem(JavaPlugin plugin){
         this.plugin = plugin;
-        YML = CustomConfig.getYmlByID("data");
+        YML = CustomConfig.getYmlByID(TDhelper.NORMAL_DATA);
     }
 
     public TDgroup getTDunitByID(String id){
         if(!TDgroupMap.containsKey(id)){
             if(YML.get(id)==null)return null;
-            TDgroupMap.put(id,new TDgroup(plugin,this,id));
+            TDgroupMap.put(id,new TDgroup(id));
         }
         return TDgroupMap.get(id);
     }
@@ -33,10 +34,10 @@ public class MainSystem {
     public TDgroup createIfNotExists(Location loc, String id, String init){
         if(TDgroupMap.containsKey(id))return TDgroupMap.get(id);
         TextDisplay td = this.spawnNew(loc);
-        if(init!=null)td.setText(init);
+        TDgroup.write(td.getUniqueId(),init);
         String uuidStr = td.getUniqueId().toString();
         YML.set(id+".uuids", List.of(uuidStr));
-        CustomConfig.saveYmlByID("data");
+        CustomConfig.saveYmlByID(TDhelper.NORMAL_DATA);
         return getTDunitByID(id);
     }
 
