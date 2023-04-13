@@ -15,18 +15,16 @@ import java.util.Map;
 public class MainSystem {
     private final JavaPlugin plugin;
     private final Map<String, TDgroup> TDgroupMap = new HashMap<>();
-    private final YamlConfiguration YML;
 
     public MainSystem(JavaPlugin plugin){
         this.plugin = plugin;
-        YML = CustomConfig.getYmlByID(TDhelper.NORMAL_DATA);
         int period =plugin.getConfig().getInt("sp_char.replace_time",15);
         new SpCharReplacer(plugin).runTaskTimer(plugin,0,20*period);
     }
 
     public TDgroup getTDunitByID(String id){
         if(!TDgroupMap.containsKey(id)){
-            if(YML.get(id)==null)return null;
+            if(CustomConfig.getYmlByID(TDhelper.NORMAL_DATA).get(id)==null)return null;
             TDgroupMap.put(id,new TDgroup(id));
         }
         return TDgroupMap.get(id);
@@ -38,7 +36,7 @@ public class MainSystem {
         TextDisplay td = this.spawnNew(loc);
         TDgroup.write(td.getUniqueId(),init);
         String uuidStr = td.getUniqueId().toString();
-        YML.set(id+".uuids", List.of(uuidStr));
+        CustomConfig.getYmlByID(TDhelper.NORMAL_DATA).set(id+".uuids", List.of(uuidStr));
         CustomConfig.saveYmlByID(TDhelper.NORMAL_DATA);
         return getTDunitByID(id);
     }

@@ -17,8 +17,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class TDgroup {
-    private static final YamlConfiguration YML_N = CustomConfig.getYmlByID(TDhelper.NORMAL_DATA);
-    private static final YamlConfiguration YML_SP = CustomConfig.getYmlByID(TDhelper.SPECIAL_DATA);
     private static final double SPACE_SIZE = 0.3;
 
     private final JavaPlugin plugin = TDhelper.getInstance();
@@ -29,7 +27,7 @@ public class TDgroup {
 
     public TDgroup(String id){
         this.ID = id;
-        uuids = YML_N.getStringList(ID+".uuids").stream().map(UUID::fromString).collect(Collectors.toList());
+        uuids = CustomConfig.getYmlByID(TDhelper.NORMAL_DATA).getStringList(ID+".uuids").stream().map(UUID::fromString).collect(Collectors.toList());
     }
 
     public String getLine(int index){
@@ -114,6 +112,7 @@ public class TDgroup {
         UtilSet.sendPrefixMessage(p,"§f§l"+loc.getWorld().getName()+"("+String.format("%.1f",loc.getX())+","+String.format("%.1f",loc.getY())+","+String.format("%.1f",loc.getZ())+")");
         UtilSet.sendEmptyMessage(p);
 
+        YamlConfiguration YML_SP = CustomConfig.getYmlByID(TDhelper.SPECIAL_DATA);
         Set<String> spKeys= YML_SP.getKeys(false);
         for(UUID uuid : uuids){
             if(spKeys.contains(uuid.toString()))UtilSet.sendPrefixMessage(p,YML_SP.getString(uuid.toString()+".def_text"));
@@ -143,20 +142,20 @@ public class TDgroup {
     public void setAutoSave(boolean status){autoSave = status;}
 
     public void reload(){
-        this.uuids = YML_N.getStringList(ID+".uuids").stream().map(UUID::fromString).collect(Collectors.toList());
+        this.uuids = CustomConfig.getYmlByID(TDhelper.NORMAL_DATA).getStringList(ID+".uuids").stream().map(UUID::fromString).collect(Collectors.toList());
     }
 
     public void save(){
-        YML_N.set(ID+".uuids",uuids.stream().map(UUID::toString).collect(Collectors.toList()));
+        CustomConfig.getYmlByID(TDhelper.NORMAL_DATA).set(ID+".uuids",uuids.stream().map(UUID::toString).collect(Collectors.toList()));
         CustomConfig.saveYmlByID(TDhelper.NORMAL_DATA);
     }
 
     void delete(){
         uuids.stream().forEach(uuid->{
             Bukkit.getEntity(uuid).remove();
-            YML_SP.set(uuid.toString(),null);
+            CustomConfig.getYmlByID(TDhelper.SPECIAL_DATA).set(uuid.toString(),null);
         });
-        YML_N.set(ID,null);
+        CustomConfig.getYmlByID(TDhelper.NORMAL_DATA).set(ID,null);
         CustomConfig.saveYmlByID(TDhelper.SPECIAL_DATA);
         CustomConfig.saveYmlByID(TDhelper.NORMAL_DATA);
     }

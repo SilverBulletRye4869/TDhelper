@@ -18,7 +18,7 @@ public class SpCharManager {
             ))
             .collect(Collectors.toSet());
 
-    private static final YamlConfiguration YML = CustomConfig.getYmlByID(TDhelper.SPECIAL_DATA);
+
 
     public static Map<String, List<String>> checker(String txt){
         Map<String,List<String>> matchedMemo = new HashMap<>();
@@ -37,13 +37,14 @@ public class SpCharManager {
     }
 
     public static void writeToYml(String key, String defaultTxt, Map<String,List<String>> spStatus){
+        YamlConfiguration YML = CustomConfig.getYmlByID(TDhelper.SPECIAL_DATA);
         YML.set(key+".def_text",defaultTxt);
         YML.set(key+".sp_status",spStatus);
         CustomConfig.saveYmlByID(TDhelper.SPECIAL_DATA);
     }
 
     public static void deleteFromYml(String key){
-        YML.set(key,null);
+        CustomConfig.getYmlByID(TDhelper.SPECIAL_DATA).set(key,null);
         CustomConfig.saveYmlByID(TDhelper.SPECIAL_DATA);
     }
 }
