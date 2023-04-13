@@ -20,6 +20,8 @@ public class MainSystem {
     public MainSystem(JavaPlugin plugin){
         this.plugin = plugin;
         YML = CustomConfig.getYmlByID(TDhelper.NORMAL_DATA);
+        int period =plugin.getConfig().getInt("sp_char.replace_time",15);
+        new SpCharReplacer(plugin).runTaskTimer(plugin,0,20*period);
     }
 
     public TDgroup getTDunitByID(String id){
