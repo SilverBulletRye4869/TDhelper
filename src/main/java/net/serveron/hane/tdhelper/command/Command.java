@@ -5,18 +5,15 @@ import net.serveron.hane.tdhelper.TDhelper;
 import net.serveron.hane.tdhelper.system.MainSystem;
 import net.serveron.hane.tdhelper.system.TDgroup;
 import net.serveron.hane.tdhelper.util.UtilSet;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.TextDisplay;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -126,11 +123,15 @@ public class Command implements CommandExecutor {
             case "movehere":
                 tdg.teleport(p.getLocation());
                 break;
-            case "test":{
-                YamlConfiguration dataYml = CustomConfig.getYmlByID(TDhelper.NORMAL_DATA);
-                TextDisplay td = (TextDisplay) Bukkit.getEntity(UUID.fromString(dataYml.getString(args[1])));
-                td.setText(args[2]);
-            }
+
+            case "delete":
+                if(id==null){
+                    UtilSet.sendPrefixMessage(p,"§cそのidのTextDisplayは存在しません");
+                    return true;
+                }
+                MAIN_SYSTEM.delete(id);
+                UtilSet.sendPrefixMessage(p,"§a正常に削除しました");
+                break;
 
 
         }
