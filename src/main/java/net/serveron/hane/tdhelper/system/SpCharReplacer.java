@@ -12,7 +12,6 @@ import org.bukkit.entity.TextDisplay;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.net.SocketTimeoutException;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
