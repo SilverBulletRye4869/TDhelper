@@ -63,6 +63,7 @@ public class CustomConfig {
     public static void saveYmlByID(String name){
         try{
             config.get(name).save(new File(plugin.getDataFolder(),name + ".yml"));
+            reloadYmlByID(name);
         }catch (IOException e){
             UtilSet.sendConsole(name+".ymlの保存に失敗しました");
         }
