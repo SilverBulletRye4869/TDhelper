@@ -12,11 +12,13 @@ import org.bukkit.entity.TextDisplay;
 import org.bukkit.plugin.java.JavaPlugin;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class TDgroup {
-    private static final YamlConfiguration YML = CustomConfig.getYmlByID(TDhelper.NORMAL_DATA);
+    private static final YamlConfiguration YML_N = CustomConfig.getYmlByID(TDhelper.NORMAL_DATA);
+    private static final YamlConfiguration YML_SP = CustomConfig.getYmlByID(TDhelper.SPECIAL_DATA);
     private static final double SPACE_SIZE = 0.3;
 
     private final JavaPlugin plugin = TDhelper.getInstance();
@@ -27,7 +29,7 @@ public class TDgroup {
 
     public TDgroup(String id){
         this.ID = id;
-        uuids = YML.getStringList(ID+".uuids").stream().map(UUID::fromString).collect(Collectors.toList());
+        uuids = YML_N.getStringList(ID+".uuids").stream().map(UUID::fromString).collect(Collectors.toList());
     }
 
     public String getLine(int index){
@@ -79,6 +81,7 @@ public class TDgroup {
             for (int i = index; i < uuids.size(); i++) tpUp(i);
             if (autoSave) save();
         }
+        SpCharManager.deleteFromYml(uuids.get(index).toString());
         return true;
     }
 
@@ -110,8 +113,11 @@ public class TDgroup {
         Location loc = Bukkit.getEntity(uuids.get(0)).getLocation();
         UtilSet.sendPrefixMessage(p,"§f§l"+loc.getWorld().getName()+"("+String.format("%.1f",loc.getX())+","+String.format("%.1f",loc.getY())+","+String.format("%.1f",loc.getZ())+")");
         UtilSet.sendEmptyMessage(p);
+
+        Set<String> spKeys= YML_SP.getKeys(false);
         for(UUID uuid : uuids){
-            UtilSet.sendPrefixMessage(p,((TextDisplay)Bukkit.getEntity(uuid)).getText());
+            if(spKeys.contains(uuid.toString()))UtilSet.sendPrefixMessage(p,YML_SP.getString(uuid.toString()+".def_text"));
+            else UtilSet.sendPrefixMessage(p,((TextDisplay)Bukkit.getEntity(uuid)).getText());
         }
         UtilSet.sendEmptyMessage(p);
         UtilSet.sendSuggestMessage(p,"§d[行を指定して編集]","/tdh setline "+ID+" ");
@@ -137,17 +143,21 @@ public class TDgroup {
     public void setAutoSave(boolean status){autoSave = status;}
 
     public void reload(){
-        this.uuids = YML.getStringList(ID+".uuids").stream().map(UUID::fromString).collect(Collectors.toList());
+        this.uuids = YML_N.getStringList(ID+".uuids").stream().map(UUID::fromString).collect(Collectors.toList());
     }
 
     public void save(){
-        YML.set(ID+".uuids",uuids.stream().map(UUID::toString).collect(Collectors.toList()));
+        YML_N.set(ID+".uuids",uuids.stream().map(UUID::toString).collect(Collectors.toList()));
         CustomConfig.saveYmlByID(TDhelper.NORMAL_DATA);
     }
 
     void delete(){
-        uuids.stream().forEach(e->Bukkit.getEntity(e).remove());
-        YML.set(ID,null);
+        uuids.stream().forEach(uuid->{
+            Bukkit.getEntity(uuid).remove();
+            YML_SP.set(uuid.toString(),null);
+        });
+        YML_N.set(ID,null);
+        CustomConfig.saveYmlByID(TDhelper.SPECIAL_DATA);
         CustomConfig.saveYmlByID(TDhelper.NORMAL_DATA);
     }
 
@@ -157,9 +167,9 @@ public class TDgroup {
         Entity entity = Bukkit.getEntity(uuid);
         if(entity == null || !(entity instanceof TextDisplay))return false;
         ((TextDisplay)entity).setText(txt);
-        Map<String, List<String>> spMatched = SpChar.checker(txt);
-        if(spMatched.size()>0)SpChar.writeToYml(uuid.toString(),txt,spMatched);
-        else SpChar.deleteFromYml(uuid.toString());
+        Map<String, List<String>> spMatched = SpCharManager.checker(txt);
+        if(spMatched.size()>0) SpCharManager.writeToYml(uuid.toString(),txt,spMatched);
+        else SpCharManager.deleteFromYml(uuid.toString());
         return true;
     }
 
