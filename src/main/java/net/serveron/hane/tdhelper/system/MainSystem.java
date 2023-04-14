@@ -12,11 +12,9 @@ import java.util.List;
 import java.util.Map;
 
 public class MainSystem {
-    private final JavaPlugin plugin;
     private final Map<String, TDgroup> TDgroupMap = new HashMap<>();
 
     public MainSystem(JavaPlugin plugin){
-        this.plugin = plugin;
         int period =plugin.getConfig().getInt("sp_char.replace_time",15);
         new SpCharReplacer(plugin).runTaskTimer(plugin,0,20*period);
     }

@@ -64,18 +64,12 @@ public class SpCharReplacer extends BukkitRunnable {
                         if (!pingResultMap.containsKey(server)) return;
                         PingResult pr = pingResultMap.get(server);
                         String defStr = yml.getString(uuidStr + ".def_text");
-                        String replaceAfter = null;
-                        switch (type) {
-                            case "players":
-                                replaceAfter = String.valueOf(pr.getPlayers());
-                                break;
-                            case "max_players":
-                                replaceAfter = String.valueOf(pr.getMaxPlayers());
-                                break;
-                            case "motd":
-                                replaceAfter = String.valueOf(pr.getMotd());
-                                break;
-                        }
+                        String replaceAfter = switch (type) {
+                            case "players" -> String.valueOf(pr.players());
+                            case "max_players" -> String.valueOf(pr.maxPlayers());
+                            case "motd" -> String.valueOf(pr.motd());
+                            default -> null;
+                        };
                         ((TextDisplay) tdMap.get(uuidStr)).setText(defStr.replaceAll(SpCharManager.ENCLOSE_CHAR + type + ":" + server + SpCharManager.ENCLOSE_CHAR, replaceAfter));
 
                     });
