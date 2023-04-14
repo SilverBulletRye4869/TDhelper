@@ -18,6 +18,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -148,6 +149,11 @@ public class UtilSet {
     public static void sendEmptyMessage(Player p){sendEmptyMessage(p,1);}
     public static void sendEmptyMessage(Player p,int cnt){
         while (cnt-->0)UtilSet.sendPrefixMessage(p,"");
+    }
+
+    public static String connectStringWithSpace(String[] strings, int startIndex){return connectStringWithSpace(strings,startIndex,strings.length);}
+    public static String connectStringWithSpace(String[] strings, int startIndex, int endIndex){
+        return String.join(" ",Arrays.copyOfRange(strings,Math.min(startIndex,strings.length),Math.min(endIndex,strings.length)));
     }
 
 
