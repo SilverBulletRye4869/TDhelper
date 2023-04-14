@@ -3,7 +3,6 @@ package net.serveron.hane.tdhelper.system;
 import net.serveron.hane.tdhelper.CustomConfig;
 import net.serveron.hane.tdhelper.TDhelper;
 import org.bukkit.Location;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.TextDisplay;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -22,7 +21,7 @@ public class MainSystem {
         new SpCharReplacer(plugin).runTaskTimer(plugin,0,20*period);
     }
 
-    public TDgroup getTDunitByID(String id){
+    public TDgroup getTDgroupByID(String id){
         if(!TDgroupMap.containsKey(id)){
             if(CustomConfig.getYmlByID(TDhelper.NORMAL_DATA).get(id)==null)return null;
             TDgroupMap.put(id,new TDgroup(id));
@@ -38,7 +37,7 @@ public class MainSystem {
         String uuidStr = td.getUniqueId().toString();
         CustomConfig.getYmlByID(TDhelper.NORMAL_DATA).set(id+".uuids", List.of(uuidStr));
         CustomConfig.saveYmlByID(TDhelper.NORMAL_DATA);
-        return getTDunitByID(id);
+        return getTDgroupByID(id);
     }
 
     public void delete(String id){
