@@ -32,13 +32,12 @@ public class Command implements CommandExecutor {
         if(!(sender instanceof Player) || !sender.hasPermission("tdh.admin"))return true;
         Player p = (Player) sender;
         if(args.length==0){
-            //help
-
+            sendHelp(p);
             return true;
         }
 
         String id = args.length >=2 ? args[1] : null;
-        TDgroup tdg = id == null ? null : MAIN_SYSTEM.getTDunitByID(id);
+        TDgroup tdg = id == null ? null : MAIN_SYSTEM.getTDgroupByID(id);
         switch (args[0]){
             case "create": {
                 if (id==null) return true;
@@ -47,7 +46,7 @@ public class Command implements CommandExecutor {
                     UtilSet.sendPrefixMessage(p, "§cそのidのTextDisplayは既に存在します");
                     return true;
                 }
-                MAIN_SYSTEM.createIfNotExists(p.getLocation(),args[1],args.length>2 ? args[2] : ("TextDisplay ("+id+")"));
+                MAIN_SYSTEM.createIfNotExists(p.getLocation(),args[1],args.length>2 ? UtilSet.connectStringWithSpace(args,2) : ("TextDisplay ("+id+")"));
                 UtilSet.sendPrefixMessage(p,"§aTextDisplay『§d"+args[1]+"§a』を作成しました");
                 break;
             }
@@ -57,7 +56,7 @@ public class Command implements CommandExecutor {
                     UtilSet.sendPrefixMessage(p, "§cそのidのTextDisplayが見つかりませんでした");
                     return true;
                 }
-                tdg.addLine(args.length < 3 ? null : args[2]);
+                tdg.addLine(args.length < 3 ? null : UtilSet.connectStringWithSpace(args,2));
                 break;
 
             case "setline": {
@@ -73,7 +72,7 @@ public class Command implements CommandExecutor {
                     UtilSet.sendPrefixMessage(p, "§c行は整数で入力してください");
                     return true;
                 }
-                boolean res = tdg.setLine(Integer.parseInt(args[2]), args[3]);
+                boolean res = tdg.setLine(Integer.parseInt(args[2]), UtilSet.connectStringWithSpace(args,3));
                 if (res) UtilSet.sendPrefixMessage(p, "§a正常に編集できました");
                 else UtilSet.sendPrefixMessage(p, "§c編集に失敗しました。行数等を再度確認の上実行してください");
                 break;
@@ -109,7 +108,7 @@ public class Command implements CommandExecutor {
                     return true;
                 }
 
-                boolean res = tdg.insertLine(Integer.parseInt(args[2]), args[3]);
+                boolean res = tdg.insertLine(Integer.parseInt(args[2]), UtilSet.connectStringWithSpace(args,3));
                 if (res) UtilSet.sendPrefixMessage(p, "§a正常に編集できました");
                 else UtilSet.sendPrefixMessage(p, "§c編集に失敗しました。行数等を再度確認の上実行してください");
                 break;
@@ -122,6 +121,7 @@ public class Command implements CommandExecutor {
 
             case "movehere":
                 tdg.teleport(p.getLocation());
+                UtilSet.sendPrefixMessage(p,"§aid:§d"+id+"§aのtdgを現在地に移動しました");
                 break;
 
             case "delete":
@@ -133,7 +133,8 @@ public class Command implements CommandExecutor {
                 UtilSet.sendPrefixMessage(p,"§a正常に削除しました");
                 break;
 
-
+            default:
+                sendHelp(p);
         }
         return true;
     }
@@ -174,7 +175,7 @@ public class Command implements CommandExecutor {
                         case "insertline":
                         case "removeline":
                             List<String> res = new ArrayList<>();
-                            int size = MAIN_SYSTEM.getTDunitByID(args[1]).getSize()-1;
+                            int size = MAIN_SYSTEM.getTDgroupByID(args[1]).getSize()-1;
                             while(size>=0)res.add(String.valueOf(size--));
                             return res;
                         default:
@@ -192,5 +193,17 @@ public class Command implements CommandExecutor {
             }
             return List.of("");
         }
+    }
+
+
+    private void sendHelp(Player p){
+        UtilSet.sendPrefixMessage(p,"§b------- TDhelper使い方 -------");
+        UtilSet.sendSuggestMessage(p,"§6/tdh create <id> §a:指定したidのtdg作成", "/tdh create ");
+        UtilSet.sendSuggestMessage(p,"§6/tdh addline <id> <text> §a:指定したtdgに1行追加","/tdh addline ");
+        UtilSet.sendSuggestMessage(p,"§6/tdh setline <id> <line-num> <text> §a:指定した行の編集", "/tdh setline ");
+        UtilSet.sendSuggestMessage(p,"§6/tdh removeline <id> [<line-num>] §a:指定した行または末尾の削除", "/tdh removeline");
+        UtilSet.sendSuggestMessage(p,"§6/tdh insertline <id> <line-num> <text> §a:指定した行を挿入","/tdh insertline ");
+        UtilSet.sendSuggestMessage(p,"§6/tdh movehere <id> §a:指定したtdgを現在地に移動","/tdh movehere ");
+        UtilSet.sendSuggestMessage(p,"§6/tdh view <id> §a:指定したtdgの詳細表示","/tdh view ");
     }
 }
