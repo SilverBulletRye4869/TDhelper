@@ -40,7 +40,7 @@ public class TDgroup {
     }
 
     public boolean setLine(int index,String text){
-        return write(uuids.get(index),text);
+        return write(uuids.get(index),text.replaceAll("&","§").replaceAll("§§","&"));
     }
 
     public boolean addLine(){return addLine(null);}
