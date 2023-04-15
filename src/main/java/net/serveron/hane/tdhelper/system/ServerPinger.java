@@ -77,6 +77,10 @@ public class ServerPinger {
 
     public record PingResult(int players, int maxPlayers, String motd) {
 
+
+        public int getPlayers(){return players;}
+        public int getMaxPlayers(){return maxPlayers;}
+        public String getMotd(){return motd;}
         @Override
             public String toString() {
                 return "PingResult{players=" + this.players + ", maxPlayers=" + this.maxPlayers + '}';
