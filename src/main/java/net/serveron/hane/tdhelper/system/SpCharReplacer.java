@@ -3,6 +3,7 @@ package net.serveron.hane.tdhelper.system;
 import net.serveron.hane.tdhelper.CustomConfig;
 import net.serveron.hane.tdhelper.TDhelper;
 import net.serveron.hane.tdhelper.system.ServerPinger.PingResult;
+import net.serveron.hane.tdhelper.util.UtilSet;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -58,12 +59,13 @@ public class SpCharReplacer extends BukkitRunnable {
                     SpCharManager.deleteFromYml(uuidStr);
                     return;
                 }
+
+                final String[] outputStr = {yml.getString(uuidStr + ".def_text")};
                 uuidCS.getKeys(false).forEach(type -> {
                     List<String> serverList = yml.getStringList(uuidStr + ".sp_status." + type);
-                    serverList.forEach(server -> {
+                    serverList.forEach(server->{
                         if (!pingResultMap.containsKey(server)) return;
                         PingResult pr = pingResultMap.get(server);
-                        String defStr = yml.getString(uuidStr + ".def_text");
                         String replaceAfter = null;
                         switch (type) {
                             case "players":
@@ -76,10 +78,10 @@ public class SpCharReplacer extends BukkitRunnable {
                                 replaceAfter = String.valueOf(pr.getMotd());
                                 break;
                         }
-                        ((TextDisplay) tdMap.get(uuidStr)).setText(defStr.replaceAll(SpCharManager.ENCLOSE_CHAR + type + ":" + server + SpCharManager.ENCLOSE_CHAR, replaceAfter));
-
+                        outputStr[0] = outputStr[0].replaceAll(SpCharManager.ENCLOSE_CHAR + type + ":" + server + SpCharManager.ENCLOSE_CHAR, replaceAfter);
                     });
                 });
+                ((TextDisplay)tdMap.get(uuidStr)).setText(outputStr[0]);
             });
         });
     }
