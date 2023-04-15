@@ -12,9 +12,9 @@ import java.util.HashSet;
 import java.util.Map;
 
 public class CustomConfig {
-    private static Map<String, YamlConfiguration> config = new HashMap<>();
-    private static JavaPlugin plugin = TDhelper.getInstance();
-    private static HashSet<String> existSet = new HashSet<>();
+    private static final Map<String, YamlConfiguration> config = new HashMap<>();
+    private static final JavaPlugin plugin = TDhelper.getInstance();
+    private static final HashSet<String> existSet = new HashSet<>();
 
     public static YamlConfiguration getYmlByID(String name) {
         if(!config.containsKey(name)){

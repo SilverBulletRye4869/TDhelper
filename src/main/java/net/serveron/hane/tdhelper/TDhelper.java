@@ -1,6 +1,6 @@
 package net.serveron.hane.tdhelper;
 
-import net.serveron.hane.tdhelper.command.Command;
+import net.serveron.hane.tdhelper.command.TdhCommand;
 import net.serveron.hane.tdhelper.system.MainSystem;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -24,7 +24,7 @@ public final class TDhelper extends JavaPlugin {
         CustomConfig.createYmlByID(SPECIAL_DATA);
 
         mainSystem = new MainSystem(this);
-        new Command(this,mainSystem);
+        new TdhCommand(this,mainSystem);
     }
 
     @Override

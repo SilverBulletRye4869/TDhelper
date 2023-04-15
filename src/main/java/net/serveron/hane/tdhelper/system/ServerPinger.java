@@ -75,40 +75,11 @@ public class ServerPinger {
         });
     }
 
-    public static class PingResult {
-
-        private final int players;
-        private final int maxPlayers;
-        private final String motd;
-
-        public PingResult(int players, int maxPlayers, String motd) {
-            this.players = players;
-            this.maxPlayers = maxPlayers;
-            this.motd = motd;
-        }
-
-        public int getPlayers() {
-            return this.players;
-        }
-
-        public String getPlayers_s(){
-            return String.valueOf(this.players);
-        }
-
-        public int getMaxPlayers() {
-            return this.maxPlayers;
-        }
-        public String getMaxPlayers_s(){
-            return String.valueOf(this.maxPlayers);
-        }
-
-        public String getMotd() {
-            return this.motd;
-        }
+    public record PingResult(int players, int maxPlayers, String motd) {
 
         @Override
-        public String toString() {
-            return "PingResult{players=" + this.players + ", maxPlayers=" + this.maxPlayers + '}';
+            public String toString() {
+                return "PingResult{players=" + this.players + ", maxPlayers=" + this.maxPlayers + '}';
+            }
         }
-    }
 }
