@@ -69,13 +69,13 @@ public class SpCharReplacer extends BukkitRunnable {
                         String replaceAfter = null;
                         switch (type) {
                             case "players":
-                                replaceAfter = String.valueOf(pr.getPlayers());
+                                replaceAfter = String.valueOf(pr.players());
                                 break;
                             case "max_players":
-                                replaceAfter = String.valueOf(pr.getMaxPlayers());
+                                replaceAfter = String.valueOf(pr.maxPlayers());
                                 break;
                             case "motd":
-                                replaceAfter = String.valueOf(pr.getMotd());
+                                replaceAfter = pr.motd();
                                 break;
                         }
                         outputStr[0] = outputStr[0].replaceAll(SpCharManager.ENCLOSE_CHAR + type + ":" + server + SpCharManager.ENCLOSE_CHAR, replaceAfter);
