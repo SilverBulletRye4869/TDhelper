@@ -17,6 +17,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class TdhCommand implements CommandExecutor, TabCompleter {
+    private static final int COUNT_PER_PAGE = 10;
+
     private final MainSystem MAIN_SYSTEM;
 
     public TdhCommand(JavaPlugin plugin, MainSystem mainSystem){
@@ -103,9 +105,34 @@ public class TdhCommand implements CommandExecutor, TabCompleter {
             }
             case "view", "info" -> tdg.view(p);
             case "movehere" -> {
+                if(tdg==null){
+                    UtilSet.sendPrefixMessage(p, "§cそのidのTextDisplayが見つかりませんでした");
+                    return true;
+                }
                 tdg.teleport(p.getLocation());
                 UtilSet.sendPrefixMessage(p, "§aid:§d" + id + "§aのtdgを現在地に移動しました");
             }
+
+            case "warp" ->{
+                if(tdg==null){
+                    UtilSet.sendPrefixMessage(p, "§cそのidのTextDisplayが見つかりませんでした");
+                    return true;
+                }
+                tdg.warp(p);
+            }
+            case "list" ->{
+                int page = (args.length < 2 || !args[1].matches("\\d+")) ? 0 : Integer.parseInt(args[1]);
+                List<String> ids = new ArrayList<>(MAIN_SYSTEM.getIdSet());
+
+                UtilSet.sendPrefixMessage(p,"§b------- TDList("+(page+1)+"/"+(ids.size()/COUNT_PER_PAGE+1)+") -------");
+                for(int i = page * COUNT_PER_PAGE ; i < Math.min((page+1)*COUNT_PER_PAGE,ids.size());i++){
+                    id = ids.get(i);
+                    UtilSet.sendRunCommandMessage(p,"§f§l"+id+" §r- "+MAIN_SYSTEM.getTDgroupByID(id).getLocation_s(),"/tdh view "+id);
+                }
+                if(page>0)UtilSet.sendRunCommandMessage(p,"§c[前のページへ]","/tdh list "+(page-1));
+                if(page<(ids.size()-1)/COUNT_PER_PAGE)UtilSet.sendRunCommandMessage(p,"§a[次のページへ]","/tdh list "+(page+1));
+            }
+
             case "delete" -> {
                 if (id == null) {
                     UtilSet.sendPrefixMessage(p, "§cそのidのTextDisplayは存在しません");
@@ -123,13 +150,13 @@ public class TdhCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String command, String[] args) {
         switch (args.length) {
             case 1 -> {
-                return Stream.of("create", "addline", "setline", "insertline", "removeline", "view", "movehere")
+                return Stream.of("create", "addline", "setline", "insertline", "removeline", "view", "movehere","warp","list")
                         .filter(g -> g.matches("^" + args[0] + ".*"))
                         .collect(Collectors.toList());
             }
             case 2 -> {
                 return switch (args[0]) {
-                    case "addline", "setline", "insertline", "removeline", "view", "movehere" ->
+                    case "addline", "setline", "insertline", "removeline", "view", "movehere" ,"warp"->
                             CustomConfig.getYmlByID(TDhelper.NORMAL_DATA).getKeys(false).stream()
                                     .filter(g -> g.matches("^" + args[1] + ".*"))
                                     .collect(Collectors.toList());
@@ -175,5 +202,6 @@ public class TdhCommand implements CommandExecutor, TabCompleter {
         UtilSet.sendSuggestMessage(p,"§6/tdh insertline <id> <line-num> <text> §a:指定した行を挿入","/tdh insertline ");
         UtilSet.sendSuggestMessage(p,"§6/tdh movehere <id> §a:指定したtdgを現在地に移動","/tdh movehere ");
         UtilSet.sendSuggestMessage(p,"§6/tdh view <id> §a:指定したtdgの詳細表示","/tdh view ");
+        UtilSet.sendSuggestMessage(p,"§6/tdh list [<page = 0>] §a:tdgのリストを表示","/tdh list ");
     }
 }
