@@ -10,6 +10,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class MainSystem {
     private final Map<String, TDgroup> TDgroupMap = new HashMap<>();
@@ -41,6 +42,10 @@ public class MainSystem {
     public void delete(String id){
         TDgroupMap.get(id).delete();
         TDgroupMap.remove(id);
+    }
+
+    public Set<String> getIdSet(){
+        return CustomConfig.getYmlByID(TDhelper.NORMAL_DATA).getKeys(false);
     }
 
     public TextDisplay spawnNew(Location loc){
