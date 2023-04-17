@@ -108,8 +108,7 @@ public class TDgroup {
 
     public void view(Player p){
         UtilSet.sendPrefixMessage(p,"§b-------- "+ID+"の情報 --------");
-        Location loc = Bukkit.getEntity(uuids.get(0)).getLocation();
-        UtilSet.sendPrefixMessage(p,"§f§l"+loc.getWorld().getName()+"("+String.format("%.1f",loc.getX())+","+String.format("%.1f",loc.getY())+","+String.format("%.1f",loc.getZ())+")");
+        UtilSet.sendRunCommandMessage(p,"§f§l"+getLocation_s(),"/tdh warp "+ID);
         UtilSet.sendEmptyMessage(p);
 
         YamlConfiguration YML_SP = CustomConfig.getYmlByID(TDhelper.SPECIAL_DATA);
@@ -126,13 +125,28 @@ public class TDgroup {
         UtilSet.sendRunCommandMessage(p,"§c[現在地に移動]","/tdh movehere "+ID);
     }
 
-    public void teleport(Location loc){
-        for(UUID uuid : uuids){
+    public void teleport(Location loc) {
+        for (UUID uuid : uuids) {
             Entity entity = Bukkit.getEntity(uuid);
             entity.teleport(loc);
-            entity.setRotation(loc.getYaw(),0);
-            loc.add(0,-SPACE_SIZE,0);
+            entity.setRotation(loc.getYaw(), 0);
+            loc.add(0, -SPACE_SIZE, 0);
         }
+    }
+    public void warp(Player p){
+        p.teleport(getLocation());
+    }
+
+    public Location getLocation(){return getLocation(0);}
+    public Location getLocation(int index){
+        if(index < 0 || index>=uuids.size())return null;
+        return Bukkit.getEntity(uuids.get(index)).getLocation();
+    }
+
+    public String getLocation_s(){return getLocation_s(0);}
+    public String getLocation_s(int index){
+        Location loc = getLocation(index);
+        return loc.getWorld().getName()+" ("+String.format("%.1f",loc.getX())+", "+String.format("%.1f",loc.getY())+", "+String.format("%.1f",loc.getZ())+")";
     }
 
     public List<UUID> getUUIDs(){
